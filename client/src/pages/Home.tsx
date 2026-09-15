@@ -6,6 +6,7 @@ import { TrendingProducts } from '../components/home/TrendingProducts';
 import { PremiumCategories } from '../components/home/PremiumCategories';
 import { BestSellers } from '../components/home/BestSellers';
 import { CustomerStories } from '../components/home/CustomerStories';
+import { BrandCTA } from '../components/home/BrandCTA';
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
         <PremiumCategories />
         <BestSellers />
         <CustomerStories />
+        <BrandCTA />
       </main>
     </div>
   );
