@@ -5,6 +5,7 @@ import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { TrendingProducts } from '../components/home/TrendingProducts';
 import { PremiumCategories } from '../components/home/PremiumCategories';
 import { BestSellers } from '../components/home/BestSellers';
+import { CustomerStories } from '../components/home/CustomerStories';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         <TrendingProducts />
         <PremiumCategories />
         <BestSellers />
+        <CustomerStories />
       </main>
     </div>
   );
