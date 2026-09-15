@@ -3,34 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { Navbar } from '../components/home/Navbar';
 import { Footer } from '../components/home/Footer';
 import { Container } from '../components/ui/Container';
-import { ProductCard, Product } from '../components/home/ProductCard';
+import { ProductCard } from '../components/home/ProductCard';
 import { Button } from '../components/ui/Button';
 import { IconButton } from '../components/ui/IconButton';
 import { Filter, X } from 'lucide-react';
-
-const ALL_PRODUCTS: Product[] = [
-  { id: 'p1', name: 'Ultra-Thin Clear MagSafe Case', category: 'cases', price: 1499, image: '/images/products/shop/shop-product-01-placeholder.svg', inStock: true, isNew: true },
-  { id: 'p2', name: 'Premium Leather Case Pro', category: 'cases', price: 2999, image: '/images/products/shop/shop-product-02-placeholder.svg', inStock: false, isNew: false },
-  { id: 'p3', name: 'Silicone Grip Cover', category: 'cases', price: 999, image: '/images/products/shop/shop-product-03-placeholder.svg', inStock: true, isNew: false },
-  { id: 'p4', name: 'Rugged Armor Shield', category: 'cases', price: 1999, image: '/images/products/shop/shop-product-04-placeholder.svg', inStock: true, isNew: false },
-  
-  { id: 'p5', name: 'High-Fidelity Audio Earbuds', category: 'audio', price: 6499, image: '/images/products/shop/shop-product-05-placeholder.svg', inStock: true, isNew: true },
-  { id: 'p6', name: 'Noise-Canceling Over-Ear', category: 'audio', price: 12999, image: '/images/products/shop/shop-product-06-placeholder.svg', inStock: true, isNew: false },
-  { id: 'p7', name: 'Sports Wireless Neckband', category: 'audio', price: 2499, image: '/images/products/shop/shop-product-07-placeholder.svg', inStock: false, isNew: false },
-  
-  { id: 'p8', name: 'Braided Nylon Type-C Cable', category: 'charging', price: 1299, image: '/images/products/shop/shop-product-08-placeholder.svg', inStock: true, isNew: false },
-  { id: 'p9', name: '65W GaN Fast Charger', category: 'charging', price: 2999, image: '/images/products/shop/shop-product-09-placeholder.svg', inStock: true, isNew: true },
-  { id: 'p10', name: 'Dual Port Car Charger', category: 'charging', price: 1499, image: '/images/products/shop/shop-product-10-placeholder.svg', inStock: true, isNew: false },
-  
-  { id: 'p11', name: 'Compact 10000mAh Power Bank', category: 'power', price: 2999, image: '/images/products/shop/shop-product-11-placeholder.svg', inStock: true, isNew: false },
-  { id: 'p12', name: 'Magnetic Power Bank', category: 'power', price: 3499, image: '/images/products/shop/shop-product-12-placeholder.svg', inStock: true, isNew: true },
-  { id: 'p13', name: 'Pro 20000mAh Power Station', category: 'power', price: 4999, image: '/images/products/shop/shop-product-13-placeholder.svg', inStock: false, isNew: false },
-  
-  { id: 'p14', name: 'Premium Phone Stand', category: 'smart-accessories', price: 1299, image: '/images/products/shop/shop-product-14-placeholder.svg', inStock: true, isNew: false },
-  { id: 'p15', name: 'MagSafe Wallet Attachment', category: 'smart-accessories', price: 1499, image: '/images/products/shop/shop-product-15-placeholder.svg', inStock: true, isNew: true },
-  
-  { id: 'p16', name: 'Gaming TWS Earbuds', category: 'gaming', price: 4599, image: '/images/products/shop/shop-product-16-placeholder.svg', inStock: true, isNew: false },
-];
+import { ALL_PRODUCTS } from '../data/products';
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },

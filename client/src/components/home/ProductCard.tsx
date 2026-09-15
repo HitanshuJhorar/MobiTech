@@ -13,6 +13,7 @@ export interface Product {
   image: string;
   inStock?: boolean;
   isNew?: boolean;
+  description?: string;
 }
 
 interface ProductCardProps {
