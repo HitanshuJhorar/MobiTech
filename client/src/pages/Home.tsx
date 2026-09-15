@@ -3,6 +3,7 @@ import { Hero } from '../components/home/Hero';
 import { FeaturedCollections } from '../components/home/FeaturedCollections';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { TrendingProducts } from '../components/home/TrendingProducts';
+import { PremiumCategories } from '../components/home/PremiumCategories';
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
         <FeaturedCollections />
         <FeaturedProducts />
         <TrendingProducts />
+        <PremiumCategories />
       </main>
     </div>
   );
