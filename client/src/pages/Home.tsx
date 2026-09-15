@@ -7,6 +7,7 @@ import { PremiumCategories } from '../components/home/PremiumCategories';
 import { BestSellers } from '../components/home/BestSellers';
 import { CustomerStories } from '../components/home/CustomerStories';
 import { BrandCTA } from '../components/home/BrandCTA';
+import { Footer } from '../components/home/Footer';
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <CustomerStories />
         <BrandCTA />
       </main>
+      <Footer />
     </div>
   );
 }
