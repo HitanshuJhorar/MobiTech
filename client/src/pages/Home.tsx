@@ -1,6 +1,7 @@
 import { Navbar } from '../components/home/Navbar';
 import { Hero } from '../components/home/Hero';
 import { FeaturedCollections } from '../components/home/FeaturedCollections';
+import { FeaturedProducts } from '../components/home/FeaturedProducts';
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <FeaturedCollections />
+        <FeaturedProducts />
       </main>
     </div>
   );
