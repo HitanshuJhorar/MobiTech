@@ -32,6 +32,12 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
 
+  // Business rule: stock adjustment would result in negative stock
+  if (err.message === "INSUFFICIENT_STOCK") {
+    res.status(400).json({ success: false, message: "Insufficient stock" });
+    return;
+  }
+
   res.status(500).json({
     success: false,
     message: err.message || "Internal Server Error",
