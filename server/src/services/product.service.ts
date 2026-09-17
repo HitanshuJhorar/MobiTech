@@ -10,14 +10,21 @@ interface ListProductsOptions {
   category?: string;
   sort?: string;
   inStock?: boolean;
+  status?: "all" | "active" | "inactive";
 }
 
 export const productService = {
   async list(options: ListProductsOptions) {
-    const { page, limit, search, category, sort, inStock } = options;
+    const { page, limit, search, category, sort, inStock, status = "active" } = options;
     const skip = (page - 1) * limit;
 
-    const filter: FilterQuery<IProduct> = { isActive: true };
+    const filter: FilterQuery<IProduct> = {};
+
+    if (status === "active") {
+      filter.isActive = true;
+    } else if (status === "inactive") {
+      filter.isActive = false;
+    }
 
     if (search) {
       filter.$or = [

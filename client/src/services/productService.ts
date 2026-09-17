@@ -1,5 +1,5 @@
 import api from './api';
-import { Product, mapApiProductToUI } from '../types';
+import { ApiProduct, Product, mapApiProductToUI } from '../types';
 
 export interface GetProductsParams {
   page?: number;
@@ -20,6 +20,20 @@ export interface PaginatedProducts {
   };
 }
 
+export interface GetAdminProductsParams extends GetProductsParams {
+  status?: 'all' | 'active' | 'inactive';
+}
+
+export interface PaginatedApiProducts {
+  products: ApiProduct[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const productService = {
   async getProducts(params: GetProductsParams = {}): Promise<PaginatedProducts> {
     const { data } = await api.get('/products', { params });
@@ -27,6 +41,33 @@ export const productService = {
       products: data.data.products.map(mapApiProductToUI),
       pagination: data.data.pagination,
     };
+  },
+
+  async getAdminProducts(params: GetAdminProductsParams = {}): Promise<PaginatedApiProducts> {
+    const { data } = await api.get('/products/admin', { params });
+    return {
+      products: data.data.products,
+      pagination: data.data.pagination,
+    };
+  },
+
+  async getAdminProductById(id: string): Promise<ApiProduct> {
+    const { data } = await api.get(`/products/${id}`);
+    return data.data;
+  },
+
+  async createProduct(productData: Partial<ApiProduct>): Promise<ApiProduct> {
+    const { data } = await api.post('/products', productData);
+    return data.data;
+  },
+
+  async updateProduct(id: string, productData: Partial<ApiProduct>): Promise<ApiProduct> {
+    const { data } = await api.patch(`/products/${id}`, productData);
+    return data.data;
+  },
+
+  async deleteProduct(id: string): Promise<void> {
+    await api.delete(`/products/${id}`);
   },
 
   async getProductById(id: string): Promise<Product> {

@@ -7,6 +7,8 @@ import Cart from "../pages/Cart";
 // Admin imports
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminProducts from "../pages/admin/AdminProducts";
+import AdminProductForm from "../pages/admin/AdminProductForm";
 import { ProtectedAdminRoute } from "../components/admin/ProtectedAdminRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 
@@ -52,11 +54,19 @@ export const router = createBrowserRouter([
             path: "dashboard",
             element: <AdminDashboard />,
           },
-          // Placeholders for future routes
           {
             path: "products",
-            element: <div className="p-8 text-center text-primary-dark/50">Products Module Coming Soon</div>,
+            element: <AdminProducts />,
           },
+          {
+            path: "products/new",
+            element: <AdminProductForm />,
+          },
+          {
+            path: "products/:id/edit",
+            element: <AdminProductForm />,
+          },
+          // Placeholders for future routes
           {
             path: "categories",
             element: <div className="p-8 text-center text-primary-dark/50">Categories Module Coming Soon</div>,

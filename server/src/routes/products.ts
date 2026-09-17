@@ -13,9 +13,13 @@ router.get("/slug/:slug", productController.getBySlug);
 
 // Public list + detail
 router.get("/", productController.list);
+
+// Admin-only list
+router.get("/admin", authMiddleware, productController.adminList);
+
 router.get("/:id", productController.getById);
 
-// Admin-only
+// Admin-only mutations
 router.post("/", authMiddleware, productController.create);
 router.patch("/:id", authMiddleware, productController.update);
 router.delete("/:id", authMiddleware, productController.delete);
