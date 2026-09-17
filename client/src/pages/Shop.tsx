@@ -6,18 +6,9 @@ import { Container } from '../components/ui/Container';
 import { ProductCard } from '../components/home/ProductCard';
 import { Button } from '../components/ui/Button';
 import { IconButton } from '../components/ui/IconButton';
-import { Filter, X } from 'lucide-react';
-import { ALL_PRODUCTS } from '../data/products';
-
-const CATEGORIES = [
-  { id: 'all', label: 'All' },
-  { id: 'cases', label: 'Phone Cases' },
-  { id: 'audio', label: 'Audio' },
-  { id: 'charging', label: 'Charging' },
-  { id: 'power', label: 'Power' },
-  { id: 'smart-accessories', label: 'Smart Accessories' },
-  { id: 'gaming', label: 'Gaming' }
-];
+import { Filter, X, Loader2 } from 'lucide-react';
+import { useProducts } from '../hooks/useProducts';
+import { useCategories } from '../hooks/useCategories';
 
 const PRICE_RANGES = [
   { id: 'under-1000', label: 'Under ₹1,000', min: 0, max: 999 },
@@ -35,28 +26,33 @@ export default function Shop() {
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortOption, setSortOption] = useState('featured');
+  const [page, setPage] = useState(1);
   
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Derived Filtered Pipeline
-  const filteredProducts = useMemo(() => {
-    let result = [...ALL_PRODUCTS];
+  // Fetch Categories
+  const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
+  
+  const formattedCategories = useMemo(() => {
+    const defaultCat = { id: 'all', label: 'All', slug: 'all' };
+    const apiCats = categories.map(c => ({ id: c.slug, label: c.name, slug: c.slug }));
+    return [defaultCat, ...apiCats];
+  }, [categories]);
 
-    // 0. Search filter
-    if (currentSearch) {
-      const searchTokens = currentSearch.toLowerCase().trim().split(/\s+/);
-      result = result.filter(p => {
-        const searchableText = `${p.name} ${p.category} ${p.description || ''}`.toLowerCase();
-        return searchTokens.every(token => searchableText.includes(token));
-      });
-    }
-    
-    // 1. Category filter
-    if (currentCategory !== 'all') {
-      result = result.filter(p => p.category === currentCategory);
-    }
-    
-    // 2. Price filter (OR logic within group)
+  // Fetch Products
+  const { data: paginatedData, isLoading: isLoadingProducts, isError } = useProducts({
+    search: currentSearch || undefined,
+    category: currentCategory !== 'all' ? currentCategory : undefined,
+    sort: sortOption !== 'featured' ? sortOption : undefined,
+    inStock: inStockOnly || undefined,
+    page,
+    limit: 50, // High limit to accommodate local price filtering for now
+  });
+
+  // Local Price Filtering (since backend does not support price ranges yet)
+  const filteredProducts = useMemo(() => {
+    let result = paginatedData?.products || [];
+
     if (selectedPriceRanges.length > 0) {
       result = result.filter(p => {
         return selectedPriceRanges.some(rangeId => {
@@ -67,23 +63,8 @@ export default function Shop() {
       });
     }
 
-    // 3. Availability filter
-    if (inStockOnly) {
-      result = result.filter(p => p.inStock);
-    }
-
-    // 4. Sorting
-    if (sortOption === 'price-asc') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortOption === 'price-desc') {
-      result.sort((a, b) => b.price - a.price);
-    } else if (sortOption === 'newest') {
-      result.sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1));
-    }
-    // 'featured' uses original order
-
     return result;
-  }, [currentSearch, currentCategory, selectedPriceRanges, inStockOnly, sortOption]);
+  }, [paginatedData?.products, selectedPriceRanges]);
 
   const activeFilterCount = (currentCategory !== 'all' ? 1 : 0) + selectedPriceRanges.length + (inStockOnly ? 1 : 0);
 
@@ -95,12 +76,14 @@ export default function Shop() {
       newParams.set('category', catId);
     }
     setSearchParams(newParams, { replace: true });
+    setPage(1);
   };
 
   const clearSearch = () => {
     const newParams = new URLSearchParams(searchParams);
     newParams.delete('search');
     setSearchParams(newParams, { replace: true });
+    setPage(1);
   };
 
   const togglePriceRange = (rangeId: string) => {
@@ -119,6 +102,7 @@ export default function Shop() {
     setSelectedPriceRanges([]);
     setInStockOnly(false);
     setSortOption('featured');
+    setPage(1);
   };
 
   const FilterSidebar = () => (
@@ -126,16 +110,24 @@ export default function Shop() {
       <div>
         <h3 className="font-bold text-primary-dark mb-4 uppercase tracking-wider text-sm">Category</h3>
         <ul className="space-y-3">
-          {CATEGORIES.slice(1).map((cat) => (
-            <li key={cat.id} className="flex items-center">
-              <button 
-                onClick={() => handleCategoryChange(cat.id)}
-                className={`text-left w-full hover:text-primary-dark-teal transition-colors flex items-center justify-between ${currentCategory === cat.id ? 'text-primary-dark-teal font-bold' : 'text-primary-dark/70'}`}
-              >
-                {cat.label}
-              </button>
-            </li>
-          ))}
+          {isLoadingCategories ? (
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-light-neutral rounded w-3/4"></div>
+              <div className="h-4 bg-light-neutral rounded w-1/2"></div>
+              <div className="h-4 bg-light-neutral rounded w-2/3"></div>
+            </div>
+          ) : (
+            formattedCategories.slice(1).map((cat) => (
+              <li key={cat.id} className="flex items-center">
+                <button 
+                  onClick={() => handleCategoryChange(cat.id)}
+                  className={`text-left w-full hover:text-primary-dark-teal transition-colors flex items-center justify-between ${currentCategory === cat.id ? 'text-primary-dark-teal font-bold' : 'text-primary-dark/70'}`}
+                >
+                  {cat.label}
+                </button>
+              </li>
+            ))
+          )}
         </ul>
       </div>
 
@@ -166,7 +158,10 @@ export default function Shop() {
           <input 
             type="checkbox" 
             checked={inStockOnly}
-            onChange={(e) => setInStockOnly(e.target.checked)}
+            onChange={(e) => {
+              setInStockOnly(e.target.checked);
+              setPage(1);
+            }}
             className="rounded border-light-neutral text-primary-dark-teal focus:ring-primary-dark-teal w-4 h-4 cursor-pointer" 
           />
           <span className={`group-hover:text-primary-dark-teal ${inStockOnly ? 'text-primary-dark-teal font-medium' : ''}`}>
@@ -226,7 +221,7 @@ export default function Shop() {
           {/* Horizontal Category Nav */}
           <div className="flex overflow-x-auto hide-scrollbar gap-2 mb-10 pb-2 border-b border-light-neutral/50">
             <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-            {CATEGORIES.map((cat) => (
+            {formattedCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
@@ -276,7 +271,10 @@ export default function Shop() {
                   <span className="text-sm text-primary-dark/60 hidden sm:inline">Sort by:</span>
                   <select 
                     value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
+                    onChange={(e) => {
+                      setSortOption(e.target.value);
+                      setPage(1);
+                    }}
                     className="bg-transparent border border-light-neutral rounded-lg px-3 py-1.5 text-primary-dark font-medium text-sm focus:ring-1 focus:ring-primary-dark-teal focus:border-primary-dark-teal cursor-pointer"
                   >
                     <option value="featured">Featured</option>
@@ -300,7 +298,7 @@ export default function Shop() {
                   )}
                   {currentCategory !== 'all' && (
                     <span className="inline-flex items-center gap-1 bg-white border border-light-neutral px-3 py-1 rounded-full text-xs font-medium text-primary-dark">
-                      Category: {CATEGORIES.find(c => c.id === currentCategory)?.label}
+                      Category: {formattedCategories.find(c => c.id === currentCategory)?.label || currentCategory}
                       <button onClick={() => handleCategoryChange('all')} className="ml-1 hover:text-red-500">
                         <X size={12} />
                       </button>
@@ -317,7 +315,10 @@ export default function Shop() {
                   {inStockOnly && (
                     <span className="inline-flex items-center gap-1 bg-white border border-light-neutral px-3 py-1 rounded-full text-xs font-medium text-primary-dark">
                       In Stock Only
-                      <button onClick={() => setInStockOnly(false)} className="ml-1 hover:text-red-500">
+                      <button onClick={() => {
+                        setInStockOnly(false);
+                        setPage(1);
+                      }} className="ml-1 hover:text-red-500">
                         <X size={12} />
                       </button>
                     </span>
@@ -333,8 +334,21 @@ export default function Shop() {
                 </div>
               )}
 
-              {/* Product Grid */}
-              {filteredProducts.length > 0 ? (
+              {/* Product Grid or States */}
+              {isLoadingProducts ? (
+                <div className="py-20 flex flex-col items-center justify-center">
+                  <Loader2 className="w-10 h-10 text-primary-dark-teal animate-spin mb-4" />
+                  <p className="text-primary-dark/60">Loading products...</p>
+                </div>
+              ) : isError ? (
+                <div className="py-20 text-center border border-dashed border-red-200 rounded-2xl bg-red-50/50">
+                  <h3 className="text-xl font-bold text-red-600 mb-2">Unable to load products</h3>
+                  <p className="text-red-600/70 mb-6">There was a problem connecting to the server.</p>
+                  <Button variant="outline" onClick={() => window.location.reload()}>
+                    Try Again
+                  </Button>
+                </div>
+              ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   {filteredProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
@@ -359,11 +373,27 @@ export default function Shop() {
                 </div>
               )}
 
-              {/* Pagination Placeholder */}
-              {filteredProducts.length > 12 && (
-                <div className="mt-16 flex justify-center">
-                  <Button variant="outline" size="lg" className="bg-white px-12">
-                    Load More
+              {/* Pagination */}
+              {paginatedData && paginatedData.pagination.totalPages > 1 && (
+                <div className="mt-16 flex justify-center items-center gap-4">
+                  <Button 
+                    variant="outline" 
+                    className="bg-white" 
+                    disabled={page === 1}
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm font-medium text-primary-dark">
+                    Page {page} of {paginatedData.pagination.totalPages}
+                  </span>
+                  <Button 
+                    variant="outline" 
+                    className="bg-white"
+                    disabled={page === paginatedData.pagination.totalPages}
+                    onClick={() => setPage(p => Math.min(paginatedData.pagination.totalPages, p + 1))}
+                  >
+                    Next
                   </Button>
                 </div>
               )}

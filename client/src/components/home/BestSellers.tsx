@@ -1,23 +1,14 @@
 import { useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { SectionHeading } from '../ui/SectionHeading';
 import { IconButton } from '../ui/IconButton';
-import { ProductCard, Product } from './ProductCard';
-
-const bestSellers: Product[] = [
-  { id: 'bs1', name: 'MagSafe Magnetic Case', category: 'Phone Cases', price: 1999, image: '/images/products/best-sellers/best-seller-01-placeholder.svg' },
-  { id: 'bs2', name: '65W GaN Fast Charger', category: 'Premium Chargers', price: 2999, image: '/images/products/best-sellers/best-seller-02-placeholder.svg' },
-  { id: 'bs3', name: 'Premium Wireless Earbuds', category: 'Audio', price: 8999, image: '/images/products/best-sellers/best-seller-03-placeholder.svg' },
-  { id: 'bs4', name: 'Magnetic Power Bank', category: 'Power', price: 3499, image: '/images/products/best-sellers/best-seller-04-placeholder.svg' },
-  { id: 'bs5', name: 'Braided USB-C Cable', category: 'Charging', price: 999, image: '/images/products/best-sellers/best-seller-05-placeholder.svg' },
-  { id: 'bs6', name: 'MagSafe Wallet', category: 'Smart Accessories', price: 1499, image: '/images/products/best-sellers/best-seller-06-placeholder.svg' },
-  { id: 'bs7', name: 'Premium Phone Stand', category: 'Smart Accessories', price: 1299, image: '/images/products/best-sellers/best-seller-07-placeholder.svg' },
-  { id: 'bs8', name: 'Gaming TWS Earbuds', category: 'Gaming', price: 4599, image: '/images/products/best-sellers/best-seller-08-placeholder.svg' },
-];
+import { ProductCard } from './ProductCard';
+import { useBestSellerProducts } from '../../hooks/useProducts';
 
 export function BestSellers() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { data: bestSellers = [], isLoading } = useBestSellerProducts();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -44,6 +35,7 @@ export function BestSellers() {
               onClick={() => scroll('left')}
               aria-label="Previous products"
               className="bg-white hover:bg-white/90 border-primary-dark-teal/10 shadow-sm"
+              disabled={isLoading || bestSellers.length === 0}
             />
             <IconButton 
               icon={ChevronRight} 
@@ -51,6 +43,7 @@ export function BestSellers() {
               onClick={() => scroll('right')}
               aria-label="Next products"
               className="bg-white hover:bg-white/90 border-primary-dark-teal/10 shadow-sm"
+              disabled={isLoading || bestSellers.length === 0}
             />
           </div>
         </div>
@@ -67,14 +60,24 @@ export function BestSellers() {
               .flex::-webkit-scrollbar { display: none; }
             `}</style>
             
-            {bestSellers.map((product) => (
-              <div 
-                key={product.id} 
-                className="w-[85vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-13.33px)] lg:w-[calc(25%-18px)] flex-none snap-start"
-              >
-                <ProductCard product={product} />
+            {isLoading ? (
+              <div className="w-full py-12 flex justify-center">
+                <Loader2 className="w-8 h-8 text-primary-dark-teal animate-spin" />
               </div>
-            ))}
+            ) : bestSellers.length > 0 ? (
+              bestSellers.map((product) => (
+                <div 
+                  key={product.id} 
+                  className="w-[85vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-13.33px)] lg:w-[calc(25%-18px)] flex-none snap-start"
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))
+            ) : (
+              <div className="w-full py-12 text-center text-primary-dark/50">
+                No best sellers available.
+              </div>
+            )}
           </div>
         </div>
       </Container>

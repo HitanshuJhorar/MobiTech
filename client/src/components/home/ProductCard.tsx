@@ -5,16 +5,7 @@ import { IconButton } from '../ui/IconButton';
 import { formatPrice } from '../../utils/formatCurrency';
 import { Link } from 'react-router-dom';
 
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  image: string;
-  inStock?: boolean;
-  isNew?: boolean;
-  description?: string;
-}
+import { Product } from '../../types';
 
 interface ProductCardProps {
   product: Product;

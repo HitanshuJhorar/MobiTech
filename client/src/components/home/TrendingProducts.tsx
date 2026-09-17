@@ -1,23 +1,14 @@
 import { useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { SectionHeading } from '../ui/SectionHeading';
 import { IconButton } from '../ui/IconButton';
-import { ProductCard, Product } from './ProductCard';
-
-const trendingProducts: Product[] = [
-  { id: 't1', name: 'Ultra-Thin Clear MagSafe Case', category: 'MagSafe Accessories', price: 1999, image: '/images/products/trending/trending-product-01-placeholder.svg' },
-  { id: 't2', name: 'High-Fidelity Audio Earbuds', category: 'Wireless Audio', price: 6499, image: '/images/products/trending/trending-product-02-placeholder.svg' },
-  { id: 't3', name: 'Braided Nylon Type-C Cable', category: 'Premium Chargers', price: 1299, image: '/images/products/trending/trending-product-03-placeholder.svg' },
-  { id: 't4', name: 'Dual Device Charging Pad', category: 'Wireless Essentials', price: 3499, image: '/images/products/trending/trending-product-04-placeholder.svg' },
-  { id: 't5', name: 'Premium Leather Watch Band', category: 'Gaming Essentials', price: 2199, image: '/images/products/trending/trending-product-05-placeholder.svg' },
-  { id: 't6', name: 'Compact 10000mAh Power Bank', category: 'Power Essentials', price: 2999, image: '/images/products/trending/trending-product-06-placeholder.svg' },
-  { id: 't7', name: 'Car Mount MagSafe Charger', category: 'MagSafe Accessories', price: 2499, image: '/images/products/trending/trending-product-07-placeholder.svg' },
-  { id: 't8', name: 'Over-Ear Studio Headphones', category: 'Wireless Audio', price: 11999, image: '/images/products/trending/trending-product-08-placeholder.svg' },
-];
+import { ProductCard } from './ProductCard';
+import { useTrendingProducts } from '../../hooks/useProducts';
 
 export function TrendingProducts() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { data: trendingProducts = [], isLoading } = useTrendingProducts();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -40,6 +31,7 @@ export function TrendingProducts() {
               onClick={() => scroll('left')}
               aria-label="Previous trending products"
               className="bg-white hover:bg-white/90 border-primary-dark-teal/10 shadow-sm"
+              disabled={isLoading || trendingProducts.length === 0}
             />
             <IconButton 
               icon={ChevronRight} 
@@ -47,6 +39,7 @@ export function TrendingProducts() {
               onClick={() => scroll('right')}
               aria-label="Next trending products"
               className="bg-white hover:bg-white/90 border-primary-dark-teal/10 shadow-sm"
+              disabled={isLoading || trendingProducts.length === 0}
             />
           </div>
         </div>
@@ -63,14 +56,24 @@ export function TrendingProducts() {
               .flex::-webkit-scrollbar { display: none; }
             `}</style>
             
-            {trendingProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="w-[85vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-13.33px)] lg:w-[calc(25%-18px)] flex-none snap-start"
-              >
-                <ProductCard product={product} />
+            {isLoading ? (
+              <div className="w-full py-12 flex justify-center">
+                <Loader2 className="w-8 h-8 text-primary-dark-teal animate-spin" />
               </div>
-            ))}
+            ) : trendingProducts.length > 0 ? (
+              trendingProducts.map((product) => (
+                <div 
+                  key={product.id} 
+                  className="w-[85vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-13.33px)] lg:w-[calc(25%-18px)] flex-none snap-start"
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))
+            ) : (
+              <div className="w-full py-12 text-center text-primary-dark/50">
+                No trending products available.
+              </div>
+            )}
           </div>
         </div>
       </Container>

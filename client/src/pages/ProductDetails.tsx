@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Navbar } from '../components/home/Navbar';
 import { Footer } from '../components/home/Footer';
@@ -6,25 +6,29 @@ import { Container } from '../components/ui/Container';
 import { Button } from '../components/ui/Button';
 import { ProductCard } from '../components/home/ProductCard';
 import { formatPrice } from '../utils/formatCurrency';
-import { ALL_PRODUCTS } from '../data/products';
 import { useCartStore } from '../store/cartStore';
-import { Minus, Plus, MessageCircle, ChevronRight, ShoppingCart, Check } from 'lucide-react';
+import { Minus, Plus, MessageCircle, ChevronRight, ShoppingCart, Check, Loader2 } from 'lucide-react';
+import { useProduct, useProducts } from '../hooks/useProducts';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
-  const product = ALL_PRODUCTS.find(p => p.id === id);
   
+  const { data: product, isLoading, isError } = useProduct(id || '');
+  
+  // Related products (same category, excluding current, max 4)
+  // We use useProducts to fetch products from the same category
+  const { data: relatedData } = useProducts({ 
+    category: product?.category, 
+    limit: 5 // Fetch 5 to ensure we have 4 after excluding the current one
+  });
+
+  const relatedProducts = (relatedData?.products || [])
+    .filter(p => p.id !== product?.id)
+    .slice(0, 4);
+
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const addItem = useCartStore(state => state.addItem);
-
-  // Related products (same category, excluding current, max 4)
-  const relatedProducts = useMemo(() => {
-    if (!product) return [];
-    return ALL_PRODUCTS
-      .filter(p => p.category === product.category && p.id !== product.id)
-      .slice(0, 4);
-  }, [product]);
 
   const increaseQuantity = () => {
     setQuantity(prev => (prev < 10 ? prev + 1 : prev));
@@ -41,7 +45,19 @@ export default function ProductDetails() {
     setTimeout(() => setAddedToCart(false), 3000);
   };
 
-  if (!product) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-soft-ivory">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center pt-24 pb-24">
+          <Loader2 className="w-12 h-12 text-primary-dark-teal animate-spin" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError || !product) {
     return (
       <div className="min-h-screen flex flex-col bg-soft-ivory">
         <Navbar />
