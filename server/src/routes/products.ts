@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { productController } from "../controllers/product.controller.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -14,9 +15,9 @@ router.get("/slug/:slug", productController.getBySlug);
 router.get("/", productController.list);
 router.get("/:id", productController.getById);
 
-// Admin-ready (auth middleware can be added here later)
-router.post("/", productController.create);
-router.patch("/:id", productController.update);
-router.delete("/:id", productController.delete);
+// Admin-only
+router.post("/", authMiddleware, productController.create);
+router.patch("/:id", authMiddleware, productController.update);
+router.delete("/:id", authMiddleware, productController.delete);
 
 export default router;

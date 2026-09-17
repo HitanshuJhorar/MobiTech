@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { categoryController } from "../controllers/category.controller.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -8,9 +9,9 @@ router.get("/", categoryController.getAll);
 router.get("/slug/:slug", categoryController.getBySlug);
 router.get("/:id", categoryController.getById);
 
-// Admin-ready (auth middleware can be added here later)
-router.post("/", categoryController.create);
-router.patch("/:id", categoryController.update);
-router.delete("/:id", categoryController.delete);
+// Admin-only
+router.post("/", authMiddleware, categoryController.create);
+router.patch("/:id", authMiddleware, categoryController.update);
+router.delete("/:id", authMiddleware, categoryController.delete);
 
 export default router;
