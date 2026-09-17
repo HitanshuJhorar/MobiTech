@@ -29,6 +29,7 @@ const PRICE_RANGES = [
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentCategory = searchParams.get('category') || 'all';
+  const currentSearch = searchParams.get('search') || '';
   
   // Local Filter State
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
@@ -40,6 +41,15 @@ export default function Shop() {
   // Derived Filtered Pipeline
   const filteredProducts = useMemo(() => {
     let result = [...ALL_PRODUCTS];
+
+    // 0. Search filter
+    if (currentSearch) {
+      const searchTokens = currentSearch.toLowerCase().trim().split(/\s+/);
+      result = result.filter(p => {
+        const searchableText = `${p.name} ${p.category} ${p.description || ''}`.toLowerCase();
+        return searchTokens.every(token => searchableText.includes(token));
+      });
+    }
     
     // 1. Category filter
     if (currentCategory !== 'all') {
@@ -73,17 +83,24 @@ export default function Shop() {
     // 'featured' uses original order
 
     return result;
-  }, [currentCategory, selectedPriceRanges, inStockOnly, sortOption]);
+  }, [currentSearch, currentCategory, selectedPriceRanges, inStockOnly, sortOption]);
 
   const activeFilterCount = (currentCategory !== 'all' ? 1 : 0) + selectedPriceRanges.length + (inStockOnly ? 1 : 0);
 
   const handleCategoryChange = (catId: string) => {
+    const newParams = new URLSearchParams(searchParams);
     if (catId === 'all') {
-      searchParams.delete('category');
+      newParams.delete('category');
     } else {
-      searchParams.set('category', catId);
+      newParams.set('category', catId);
     }
-    setSearchParams(searchParams, { replace: true });
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const clearSearch = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('search');
+    setSearchParams(newParams, { replace: true });
   };
 
   const togglePriceRange = (rangeId: string) => {
@@ -95,10 +112,10 @@ export default function Shop() {
   };
 
   const clearAllFilters = () => {
-    if (currentCategory !== 'all') {
-      searchParams.delete('category');
-      setSearchParams(searchParams, { replace: true });
-    }
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('category');
+    setSearchParams(newParams, { replace: true });
+    
     setSelectedPriceRanges([]);
     setInStockOnly(false);
     setSortOption('featured');
@@ -175,19 +192,35 @@ export default function Shop() {
     <div className="min-h-screen flex flex-col bg-soft-ivory">
       <Navbar />
       
-      <main className="flex-grow pt-32 pb-24">
+      <main className="flex-grow pt-[120px] md:pt-[140px] pb-24">
         <Container>
           {/* Header */}
           <div className="mb-12">
-            <span className="text-caption text-primary-dark-teal tracking-widest mb-3 block">
-              THE MOBITECH COLLECTION
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-dark mb-4">
-              Shop Accessories
-            </h1>
-            <p className="text-body-large text-primary-dark/70 max-w-xl">
-              Premium accessories designed for your everyday setup.
-            </p>
+            {currentSearch ? (
+              <>
+                <span className="text-caption text-primary-dark-teal tracking-widest mb-3 block">
+                  SEARCH RESULTS
+                </span>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-dark mb-4">
+                  Results for "{currentSearch}"
+                </h1>
+                <p className="text-body-large text-primary-dark/70 max-w-xl">
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} match your search.
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="text-caption text-primary-dark-teal tracking-widest mb-3 block">
+                  THE MOBITECH COLLECTION
+                </span>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-dark mb-4">
+                  Shop Accessories
+                </h1>
+                <p className="text-body-large text-primary-dark/70 max-w-xl">
+                  Premium accessories designed for your everyday setup.
+                </p>
+              </>
+            )}
           </div>
 
           {/* Horizontal Category Nav */}
@@ -254,9 +287,17 @@ export default function Shop() {
                 </div>
               </div>
 
-              {/* Active Filter Chips (Desktop) */}
-              {activeFilterCount > 0 && (
+              {/* Active Filter & Search Chips (Desktop) */}
+              {(activeFilterCount > 0 || currentSearch) && (
                 <div className="hidden lg:flex flex-wrap gap-2 mb-6">
+                  {currentSearch && (
+                    <span className="inline-flex items-center gap-1 bg-white border border-light-neutral px-3 py-1 rounded-full text-xs font-medium text-primary-dark">
+                      Search: "{currentSearch}"
+                      <button onClick={clearSearch} className="ml-1 hover:text-red-500">
+                        <X size={12} />
+                      </button>
+                    </span>
+                  )}
                   {currentCategory !== 'all' && (
                     <span className="inline-flex items-center gap-1 bg-white border border-light-neutral px-3 py-1 rounded-full text-xs font-medium text-primary-dark">
                       Category: {CATEGORIES.find(c => c.id === currentCategory)?.label}
@@ -281,12 +322,14 @@ export default function Shop() {
                       </button>
                     </span>
                   )}
-                  <button 
-                    onClick={clearAllFilters}
-                    className="text-xs text-primary-dark-teal font-medium hover:underline ml-2"
-                  >
-                    Clear All
-                  </button>
+                  {activeFilterCount > 0 && (
+                    <button 
+                      onClick={clearAllFilters}
+                      className="text-xs text-primary-dark-teal font-medium hover:underline ml-2"
+                    >
+                      Clear All Filters
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -299,14 +342,20 @@ export default function Shop() {
                 </div>
               ) : (
                 <div className="py-20 text-center border border-dashed border-light-neutral/80 rounded-2xl bg-white/50">
-                  <h3 className="text-xl font-bold text-primary-dark mb-2">No products found</h3>
-                  <p className="text-primary-dark/60 mb-6">Try adjusting your filters or category selection.</p>
-                  <Button 
-                    variant="primary" 
-                    onClick={clearAllFilters}
-                  >
-                    Clear All Filters
-                  </Button>
+                  <h3 className="text-xl font-bold text-primary-dark mb-2">No products found {currentSearch && `for "${currentSearch}"`}</h3>
+                  <p className="text-primary-dark/60 mb-6">Try a different search or adjust your filters.</p>
+                  <div className="flex items-center justify-center gap-4">
+                    {currentSearch && (
+                      <Button variant="primary" onClick={clearSearch}>
+                        Clear Search
+                      </Button>
+                    )}
+                    {activeFilterCount > 0 && (
+                      <Button variant={currentSearch ? "outline" : "primary"} onClick={clearAllFilters} className="bg-white">
+                        Clear All Filters
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
 
