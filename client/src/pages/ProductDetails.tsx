@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { ProductCard } from '../components/home/ProductCard';
 import { formatPrice } from '../utils/formatCurrency';
 import { ALL_PRODUCTS } from '../data/products';
+import { useCartStore } from '../store/cartStore';
 import { Minus, Plus, MessageCircle, ChevronRight, ShoppingCart, Check } from 'lucide-react';
 
 export default function ProductDetails() {
@@ -15,6 +16,7 @@ export default function ProductDetails() {
   
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const addItem = useCartStore(state => state.addItem);
 
   // Related products (same category, excluding current, max 4)
   const relatedProducts = useMemo(() => {
@@ -34,6 +36,7 @@ export default function ProductDetails() {
 
   const handleAddToCart = () => {
     if (!product?.inStock) return;
+    addItem(product, quantity);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 3000);
   };

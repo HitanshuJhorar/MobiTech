@@ -3,6 +3,7 @@ import { GlassSurface } from '../ui/GlassSurface';
 import { IconButton } from '../ui/IconButton';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
+import { useCartStore } from '../../store/cartStore';
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ export function Navbar() {
   const [searchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  
+  const cartItems = useCartStore(state => state.items);
+  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     setSearchValue(searchParams.get('search') || '');
@@ -54,7 +58,14 @@ export function Navbar() {
               aria-label="Search" 
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
             />
-            <IconButton icon={ShoppingBag} size="sm" aria-label="Cart" />
+            <Link to="/cart" className="relative flex items-center justify-center p-1.5 text-primary-dark hover:bg-black/5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-dark-teal">
+              <ShoppingBag size={16} strokeWidth={1.5} />
+              {totalCartQuantity > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary-dark-teal text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center border border-white/20">
+                  {totalCartQuantity > 99 ? '99+' : totalCartQuantity}
+                </span>
+              )}
+            </Link>
             <IconButton icon={Menu} size="sm" aria-label="Menu" className="ml-1" />
           </div>
         </div>
@@ -84,7 +95,14 @@ export function Navbar() {
         {/* Icons - Desktop */}
         <div className="hidden md:flex items-center gap-2">
           <IconButton icon={Heart} size="sm" aria-label="Wishlist" />
-          <IconButton icon={ShoppingBag} size="sm" aria-label="Cart" />
+          <Link to="/cart" className="relative flex items-center justify-center p-1.5 md:p-2 text-primary-dark hover:bg-black/5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-dark-teal">
+              <ShoppingBag size={20} strokeWidth={1.5} className="w-4 h-4 md:w-5 md:h-5" />
+              {totalCartQuantity > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary-dark-teal text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center border border-white/20">
+                  {totalCartQuantity > 99 ? '99+' : totalCartQuantity}
+                </span>
+              )}
+            </Link>
         </div>
       </GlassSurface>
     </div>
