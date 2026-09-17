@@ -26,7 +26,14 @@ export interface ApiProduct {
   isActive: boolean;
 }
 
+export interface Admin {
+  id: string;
+  email: string;
+  name: string;
+}
+
 export interface Product {
+
   id: string;
   name: string;
   category: string;
