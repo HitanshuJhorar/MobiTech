@@ -6,6 +6,10 @@ const router = Router();
 
 // Public
 router.get("/", categoryController.getAll);
+
+// Admin-only list
+router.get("/admin", authMiddleware, categoryController.adminGetAll);
+
 router.get("/slug/:slug", categoryController.getBySlug);
 router.get("/:id", categoryController.getById);
 

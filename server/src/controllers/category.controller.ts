@@ -13,6 +13,17 @@ export const categoryController = {
     }
   },
 
+  async adminGetAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const statusParam = req.query.status as string;
+      const status = ["all", "active", "inactive"].includes(statusParam) ? (statusParam as "all" | "active" | "inactive") : "all";
+      const categories = await categoryService.getAdminAll(status);
+      res.json({ success: true, data: categories });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const category = await categoryService.getById(req.params.id);
@@ -73,12 +84,12 @@ export const categoryController = {
 
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Prevent deletion if active products reference this category
-      const activeProducts = await Product.countDocuments({ category: req.params.id, isActive: true });
+      // Prevent deletion if ANY products reference this category to avoid orphaned products
+      const activeProducts = await Product.countDocuments({ category: req.params.id });
       if (activeProducts > 0) {
         res.status(409).json({
           success: false,
-          message: `Cannot delete: ${activeProducts} active product(s) reference this category.`,
+          message: `Cannot delete: ${activeProducts} product(s) reference this category.`,
         });
         return;
       }
