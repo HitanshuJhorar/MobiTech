@@ -6,12 +6,24 @@ import { Button } from '../components/ui/Button';
 import { IconButton } from '../components/ui/IconButton';
 import { formatPrice } from '../utils/formatCurrency';
 import { useCartStore } from '../store/cartStore';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react';
+import { createWhatsAppOrderUrl } from '../utils/whatsapp';
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, clearCart } = useCartStore();
 
+  
   const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
+  const isWhatsAppConfigured = whatsappNumber && whatsappNumber !== 'REPLACE_WITH_BUSINESS_NUMBER';
+
+  const handleWhatsAppOrder = () => {
+    if (!isWhatsAppConfigured) return;
+    const url = createWhatsAppOrderUrl(items, subtotal, whatsappNumber);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-soft-ivory">
@@ -134,9 +146,32 @@ export default function Cart() {
                   </div>
 
                   <div className="flex flex-col gap-4">
-                    <Button variant="primary" size="lg" className="w-full">
-                      Order on WhatsApp
-                    </Button>
+                    {isWhatsAppConfigured ? (
+                      <Button 
+                        variant="primary" 
+                        size="lg" 
+                        className="w-full flex items-center justify-center gap-2"
+                        onClick={handleWhatsAppOrder}
+                      >
+                        <MessageCircle size={20} />
+                        Order on WhatsApp
+                      </Button>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <Button 
+                          variant="primary" 
+                          size="lg" 
+                          className="w-full flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" 
+                          disabled
+                        >
+                          <MessageCircle size={20} />
+                          Order on WhatsApp
+                        </Button>
+                        <span className="text-xs text-primary-dark/50 text-center">
+                          WhatsApp ordering is currently unavailable.
+                        </span>
+                      </div>
+                    )}
                     <Link to="/shop" className="w-full">
                       <Button variant="outline" size="lg" className="w-full bg-transparent">
                         Continue Shopping
