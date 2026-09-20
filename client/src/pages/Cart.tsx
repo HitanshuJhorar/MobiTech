@@ -1,4 +1,6 @@
+import { useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import { Navbar } from '../components/home/Navbar';
 import { Footer } from '../components/home/Footer';
 import { Container } from '../components/ui/Container';
@@ -6,39 +8,139 @@ import { Button } from '../components/ui/Button';
 import { IconButton } from '../components/ui/IconButton';
 import { formatPrice } from '../utils/formatCurrency';
 import { useCartStore } from '../store/cartStore';
-import { Minus, Plus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, MessageCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { createWhatsAppOrderUrl } from '../utils/whatsapp';
+import { orderService, CreateOrderResponse } from '../services/orderService';
+import { useMutation } from '@tanstack/react-query';
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, clearCart } = useCartStore();
 
-  
+  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerNote, setCustomerNote] = useState('');
+  const [checkoutError, setCheckoutError] = useState('');
+  const [createdOrder, setCreatedOrder] = useState<CreateOrderResponse | null>(null);
+  const [cartSnapshot, setCartSnapshot] = useState<typeof items>([]);
+
   const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
   const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
   const isWhatsAppConfigured = whatsappNumber && whatsappNumber !== 'REPLACE_WITH_BUSINESS_NUMBER';
 
-  const handleWhatsAppOrder = () => {
+  const createOrderMutation = useMutation({
+    mutationFn: (payload: Parameters<typeof orderService.createOrder>[0]) => orderService.createOrder(payload),
+    onSuccess: () => {
+      // Don't auto-invalidate products immediately to prevent jarring UI shifts while reading success message
+      // They'll invalidate naturally on next navigation
+    },
+  });
+
+  const handleCheckoutSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     if (!isWhatsAppConfigured) return;
-    const url = createWhatsAppOrderUrl(items, subtotal, whatsappNumber);
-    window.open(url, '_blank', 'noopener,noreferrer');
+    setCheckoutError('');
+
+    try {
+      const orderPayload = {
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        customerEmail: customerEmail.trim() || undefined,
+        customerNote: customerNote.trim() || undefined,
+        items: items.map(i => ({ productId: i.product.id, quantity: i.quantity })),
+      };
+
+      const orderResponse = await createOrderMutation.mutateAsync(orderPayload);
+      
+      setCreatedOrder(orderResponse);
+      setCartSnapshot(items); // Save items before clearing cart
+      setCheckoutStep('success');
+
+      // Clear the cart AFTER successful order creation
+      clearCart();
+
+      // Open WhatsApp automatically
+      const url = createWhatsAppOrderUrl(
+        orderResponse.orderNumber,
+        items,
+        orderResponse.subtotal,
+        orderPayload.customerName,
+        orderPayload.customerPhone,
+        orderPayload.customerNote,
+        whatsappNumber
+      );
+      window.open(url, '_blank', 'noopener,noreferrer');
+
+    } catch (err) {
+      if (isAxiosError(err)) {
+        const msg = err.response?.data?.message || 'Order creation failed.';
+        if (msg.includes('stock') || msg.includes('available')) {
+          setCheckoutError('Some items are no longer available in the requested quantity. Please review your cart.');
+        } else {
+          setCheckoutError(msg);
+        }
+      } else {
+        setCheckoutError('An unexpected error occurred. Please try again.');
+      }
+    }
   };
 
-
+  const handleManualWhatsAppOpen = () => {
+    if (!createdOrder || !isWhatsAppConfigured) return;
+    const url = createWhatsAppOrderUrl(
+      createdOrder.orderNumber,
+      cartSnapshot,
+      createdOrder.subtotal,
+      customerName,
+      customerPhone,
+      customerNote,
+      whatsappNumber
+    );
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
   return (
-    <div className="min-h-screen flex flex-col bg-soft-ivory">
+    <div className="min-h-screen flex flex-col bg-soft-ivory/30">
       <Navbar />
-      
-      <main className="flex-grow pt-[120px] md:pt-[140px] pb-24">
+
+      <main className="flex-grow py-12">
         <Container>
-          <div className="mb-10">
-            <h1 className="text-4xl font-bold tracking-tight text-primary-dark">
-              Your Cart
-            </h1>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-primary-dark">Shopping Cart</h1>
+            <p className="text-primary-dark/60 mt-2">
+              {checkoutStep === 'success' ? 'Order confirmed.' : 'Review your items and request an order via WhatsApp.'}
+            </p>
           </div>
 
-          {items.length === 0 ? (
-            <div className="py-20 text-center border border-dashed border-light-neutral/80 rounded-3xl bg-white/50 flex flex-col items-center">
+          {checkoutStep === 'success' && createdOrder ? (
+            <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 border border-light-neutral shadow-sm text-center">
+              <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-600 mx-auto mb-6">
+                <CheckCircle2 size={32} />
+              </div>
+              <h2 className="text-2xl font-bold text-primary-dark mb-2">Order request created!</h2>
+              <p className="text-primary-dark/60 mb-6">
+                Your order <span className="font-mono text-primary-dark font-medium">{createdOrder.orderNumber}</span> has been created successfully.
+              </p>
+              
+              <div className="bg-soft-ivory/30 border border-light-neutral rounded-xl p-4 mb-8 inline-block min-w-[200px]">
+                <div className="text-sm text-primary-dark/60 mb-1">Total Amount</div>
+                <div className="text-xl font-bold text-primary-dark">{formatPrice(createdOrder.subtotal)}</div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link to="/shop" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full bg-white">Continue Shopping</Button>
+                </Link>
+                {isWhatsAppConfigured && (
+                  <Button variant="primary" size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2" onClick={handleManualWhatsAppOpen}>
+                    <MessageCircle size={20} /> Open WhatsApp
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-light-neutral/40 shadow-sm text-center px-4">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-primary-dark-teal/40 mb-6 shadow-sm">
                 <ShoppingBag size={32} />
               </div>
@@ -145,39 +247,118 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-4">
-                    {isWhatsAppConfigured ? (
-                      <Button 
-                        variant="primary" 
-                        size="lg" 
-                        className="w-full flex items-center justify-center gap-2"
-                        onClick={handleWhatsAppOrder}
-                      >
-                        <MessageCircle size={20} />
-                        Order on WhatsApp
-                      </Button>
-                    ) : (
-                      <div className="flex flex-col gap-2">
+                  {checkoutStep === 'checkout' ? (
+                    <form onSubmit={handleCheckoutSubmit} className="flex flex-col gap-4 animate-fade-in">
+                      {checkoutError && (
+                        <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+                          {checkoutError}
+                        </div>
+                      )}
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-primary-dark mb-1">Name <span className="text-red-500">*</span></label>
+                          <input 
+                            required
+                            type="text" 
+                            value={customerName}
+                            onChange={e => setCustomerName(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border border-light-neutral focus:border-primary-dark-teal outline-none text-sm"
+                            placeholder="Your full name"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-primary-dark mb-1">Phone <span className="text-red-500">*</span></label>
+                          <input 
+                            required
+                            type="tel" 
+                            value={customerPhone}
+                            onChange={e => setCustomerPhone(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border border-light-neutral focus:border-primary-dark-teal outline-none text-sm"
+                            placeholder="e.g. +91 9876543210"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-primary-dark mb-1">Email <span className="text-primary-dark/40 font-normal">(optional)</span></label>
+                          <input 
+                            type="email" 
+                            value={customerEmail}
+                            onChange={e => setCustomerEmail(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border border-light-neutral focus:border-primary-dark-teal outline-none text-sm"
+                            placeholder="For order updates"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-primary-dark mb-1">Note <span className="text-primary-dark/40 font-normal">(optional)</span></label>
+                          <textarea 
+                            value={customerNote}
+                            onChange={e => setCustomerNote(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border border-light-neutral focus:border-primary-dark-teal outline-none text-sm min-h-[60px] resize-none"
+                            placeholder="Any special requests?"
+                            maxLength={500}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="pt-2 flex flex-col gap-3">
+                        <Button 
+                          type="submit" 
+                          variant="primary" 
+                          size="lg" 
+                          className="w-full flex items-center justify-center gap-2"
+                          disabled={createOrderMutation.isPending || !isWhatsAppConfigured}
+                        >
+                          {createOrderMutation.isPending ? (
+                            <><Loader2 size={18} className="animate-spin" /> Processing...</>
+                          ) : (
+                            <><MessageCircle size={18} /> Request Order via WhatsApp</>
+                          )}
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="lg" 
+                          className="w-full bg-transparent"
+                          onClick={() => setCheckoutStep('cart')}
+                          disabled={createOrderMutation.isPending}
+                        >
+                          Back to Cart
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="flex flex-col gap-4 animate-fade-in">
+                      {isWhatsAppConfigured ? (
                         <Button 
                           variant="primary" 
                           size="lg" 
-                          className="w-full flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" 
-                          disabled
+                          className="w-full flex items-center justify-center gap-2"
+                          onClick={() => setCheckoutStep('checkout')}
                         >
-                          <MessageCircle size={20} />
-                          Order on WhatsApp
+                          Proceed to Checkout
                         </Button>
-                        <span className="text-xs text-primary-dark/50 text-center">
-                          WhatsApp ordering is currently unavailable.
-                        </span>
-                      </div>
-                    )}
-                    <Link to="/shop" className="w-full">
-                      <Button variant="outline" size="lg" className="w-full bg-transparent">
-                        Continue Shopping
-                      </Button>
-                    </Link>
-                  </div>
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <Button 
+                            variant="primary" 
+                            size="lg" 
+                            className="w-full flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" 
+                            disabled
+                          >
+                            Proceed to Checkout
+                          </Button>
+                          <span className="text-xs text-primary-dark/50 text-center">
+                            WhatsApp ordering is currently unavailable.
+                          </span>
+                        </div>
+                      )}
+                      <Link to="/shop" className="w-full">
+                        <Button variant="outline" size="lg" className="w-full bg-transparent">
+                          Continue Shopping
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

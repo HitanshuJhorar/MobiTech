@@ -26,6 +26,21 @@ export interface Order {
   updatedAt: string;
 }
 
+export interface CreateOrderInput {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  customerNote?: string;
+  items: { productId: string; quantity: number }[];
+}
+
+export interface CreateOrderResponse {
+  orderNumber: string;
+  status: OrderStatus;
+  subtotal: number;
+  createdAt: string;
+}
+
 export interface OrderListItem {
   _id: string;
   orderNumber: string;
@@ -53,6 +68,11 @@ export interface OrdersPagination {
 }
 
 export const orderService = {
+  async createOrder(payload: CreateOrderInput): Promise<CreateOrderResponse> {
+    const { data } = await api.post('/orders', payload);
+    return data.data;
+  },
+
   async listOrders(params: GetOrdersParams = {}): Promise<{ orders: OrderListItem[]; pagination: OrdersPagination }> {
     const { data } = await api.get('/orders', { params });
     return data.data;
