@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Container } from '../ui/Container';
-import { MessageCircle, Mail, ArrowUpRight } from 'lucide-react';
+import { MessageCircle, Mail } from 'lucide-react';
 
 const shopLinks = [
   { label: 'All Products', href: '/shop' },
