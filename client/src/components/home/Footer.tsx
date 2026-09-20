@@ -5,7 +5,7 @@ import { Button } from '../ui/Button';
 
 const shopLinks = [
   { label: 'All Products', href: '/shop' },
-  { label: 'Phone Cases', href: '/shop?category=cases' },
+  { label: 'Phone Cases', href: '/shop?category=phone-cases' },
   { label: 'Audio', href: '/shop?category=audio' },
   { label: 'Charging', href: '/shop?category=charging' },
   { label: 'Power', href: '/shop?category=power' },
@@ -20,6 +20,11 @@ const helpLinks = [
 ];
 
 export function Footer() {
+  const rawWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER;
+  const whatsappNumber = rawWhatsApp && rawWhatsApp !== 'REPLACE_WITH_BUSINESS_NUMBER' 
+    ? rawWhatsApp.replace(/[^0-9]/g, '') 
+    : '';
+
   return (
     <footer className="bg-primary-dark-teal text-white pt-20 pb-8">
       <Container>
@@ -41,12 +46,19 @@ export function Footer() {
               <p className="text-white/80 mb-4 text-sm">
                 Get personalized recommendations from our team.
               </p>
-              <a href="https://wa.me/REPLACE_WITH_NUMBER" target="_blank" rel="noopener noreferrer" tabIndex={-1}>
-                <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10 w-full flex items-center justify-center gap-2">
+              {whatsappNumber ? (
+                <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
+                  <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10 w-full flex items-center justify-center gap-2">
+                    <MessageCircle size={16} />
+                    Talk on WhatsApp
+                  </Button>
+                </a>
+              ) : (
+                <Button variant="outline" size="sm" disabled className="border-white/20 text-white opacity-50 cursor-not-allowed w-full flex items-center justify-center gap-2">
                   <MessageCircle size={16} />
                   Talk on WhatsApp
                 </Button>
-              </a>
+              )}
             </div>
           </div>
 
@@ -74,12 +86,11 @@ export function Footer() {
             <ul className="flex flex-col gap-4">
               {helpLinks.map((link) => (
                 <li key={link.label}>
-                  <Link 
-                    to={link.href} 
-                    className="text-white/60 hover:text-white transition-colors duration-200 w-fit"
+                  <span 
+                    className="text-white/60 w-fit cursor-default"
                   >
                     {link.label}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -90,27 +101,30 @@ export function Footer() {
             <h3 className="text-white font-bold mb-6 tracking-wide">CONNECT</h3>
             <ul className="flex flex-col gap-5">
               <li>
-                <a 
-                  href="https://wa.me/REPLACE_WITH_NUMBER" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-white/60 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit"
-                  aria-label="WhatsApp"
-                >
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                    <MessageCircle size={16} />
-                  </div>
-                  <span>WhatsApp</span>
-                </a>
+                {whatsappNumber ? (
+                  <a 
+                    href={`https://wa.me/${whatsappNumber}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-white/60 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit"
+                    aria-label="WhatsApp"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                      <MessageCircle size={16} />
+                    </div>
+                    <span>WhatsApp</span>
+                  </a>
+                ) : (
+                  <span className="text-white/60 opacity-50 flex items-center gap-3 w-fit cursor-not-allowed">
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                      <MessageCircle size={16} />
+                    </div>
+                    <span>WhatsApp</span>
+                  </span>
+                )}
               </li>
               <li>
-                <a 
-                  href="https://instagram.com/REPLACE" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-white/60 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit"
-                  aria-label="Instagram"
-                >
+                <span className="text-white/60 flex items-center gap-3 w-fit cursor-default">
                   <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
@@ -119,7 +133,7 @@ export function Footer() {
                     </svg>
                   </div>
                   <span>Instagram</span>
-                </a>
+                </span>
               </li>
               <li>
                 <a 
@@ -145,12 +159,12 @@ export function Footer() {
             <span>All rights reserved.</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="hover:text-white transition-colors duration-200">
+            <span className="hover:text-white transition-colors duration-200 cursor-default">
               Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-white transition-colors duration-200">
+            </span>
+            <span className="hover:text-white transition-colors duration-200 cursor-default">
               Terms of Service
-            </Link>
+            </span>
           </div>
         </div>
       </Container>

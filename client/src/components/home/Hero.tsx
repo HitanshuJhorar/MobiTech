@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Container } from '../ui/Container';
 
@@ -25,8 +26,12 @@ export function Hero() {
             everyday setup.
           </p>
           <div className="flex flex-wrap items-center gap-4">
-            <Button variant="primary" size="lg">Shop Collection</Button>
-            <Button variant="outline" size="lg" className="border-primary-dark-teal/30 hover:bg-white/20">Explore Categories</Button>
+            <Link to="/shop">
+              <Button variant="primary" size="lg">Shop Collection</Button>
+            </Link>
+            <Link to="/shop">
+              <Button variant="outline" size="lg" className="border-primary-dark-teal/30 hover:bg-white/20">Explore Categories</Button>
+            </Link>
           </div>
         </div>
 

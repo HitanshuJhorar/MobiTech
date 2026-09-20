@@ -8,6 +8,7 @@ const categories = [
   {
     id: 'cases',
     name: 'Phone Cases',
+    to: '/shop?category=phone-cases',
     image: '/images/categories/phone-cases-placeholder.svg',
     className: 'md:col-span-2 bg-primary-dark-teal text-white',
     titleClass: 'text-white',
@@ -17,6 +18,7 @@ const categories = [
   {
     id: 'audio',
     name: 'Audio',
+    to: '/shop?category=audio',
     image: '/images/categories/audio-placeholder.svg',
     className: 'md:row-span-2 bg-warm-cream text-primary-dark',
     titleClass: 'text-primary-dark',
@@ -26,6 +28,7 @@ const categories = [
   {
     id: 'charging',
     name: 'Charging',
+    to: '/shop?category=charging',
     image: '/images/categories/charging-placeholder.svg',
     className: 'bg-muted-teal text-white',
     titleClass: 'text-white',
@@ -35,6 +38,7 @@ const categories = [
   {
     id: 'power',
     name: 'Power',
+    to: '/shop?category=power',
     image: '/images/categories/power-placeholder.svg',
     className: 'bg-white text-primary-dark border border-light-neutral/50',
     titleClass: 'text-primary-dark',
@@ -44,6 +48,7 @@ const categories = [
   {
     id: 'smart',
     name: 'Smart Accessories',
+    to: '/shop?category=smart-accessories',
     image: '/images/categories/smart-accessories-placeholder.svg',
     className: 'bg-secondary-teal text-white',
     titleClass: 'text-white',
@@ -53,6 +58,7 @@ const categories = [
   {
     id: 'gaming',
     name: 'Gaming',
+    to: '/shop?category=gaming',
     image: '/images/categories/gaming-placeholder.svg',
     className: 'md:col-span-2 bg-primary-dark text-white',
     titleClass: 'text-white',
@@ -71,7 +77,7 @@ export function PremiumCategories() {
           {categories.map((cat) => (
             <Link 
               key={cat.id} 
-              to={`/shop?category=${cat.id}`}
+              to={cat.to}
               className={`block ${cat.className}`}
               style={{ borderRadius: '1.5rem' }}
             >

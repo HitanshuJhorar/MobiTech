@@ -26,23 +26,25 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Image Area */}
-      <div className="relative aspect-square bg-soft-ivory/40 flex items-center justify-center p-6">
+      <Link to={`/product/${product.id}`} className="relative aspect-square bg-soft-ivory/40 flex items-center justify-center p-6 block">
         <img 
           src={product.image} 
           alt={product.name}
           className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
           loading="lazy"
         />
-      </div>
+      </Link>
 
       {/* Content Area */}
       <div className="p-5 flex flex-col flex-grow">
         <div className="mb-1.5">
           <span className="text-caption">{product.category}</span>
         </div>
-        <h3 className="text-body-large font-bold text-primary-dark mb-2 line-clamp-2">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product.id}`} className="block">
+          <h3 className="text-body-large font-bold text-primary-dark mb-2 line-clamp-2 hover:text-primary-dark-teal transition-colors">
+            {product.name}
+          </h3>
+        </Link>
         <div className="text-price mb-5 mt-auto">
           {formatPrice(product.price)}
         </div>

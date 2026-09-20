@@ -86,7 +86,7 @@ export function Navbar() {
 
         {/* Links - Desktop */}
         <nav className="hidden md:flex items-center gap-8 mr-8">
-          <Link to="/shop?category=cases" className="text-sm font-medium text-primary-dark hover:text-primary-dark-teal/70 transition-colors">Cases</Link>
+          <Link to="/shop?category=phone-cases" className="text-sm font-medium text-primary-dark hover:text-primary-dark-teal/70 transition-colors">Cases</Link>
           <Link to="/shop?category=audio" className="text-sm font-medium text-primary-dark hover:text-primary-dark-teal/70 transition-colors">Audio</Link>
           <Link to="/shop?category=power" className="text-sm font-medium text-primary-dark hover:text-primary-dark-teal/70 transition-colors">Power</Link>
           <Link to="/shop" className="text-sm font-medium text-primary-dark hover:text-primary-dark-teal/70 transition-colors">Shop</Link>
