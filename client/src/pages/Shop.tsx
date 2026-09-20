@@ -106,10 +106,10 @@ export default function Shop() {
   };
 
   const FilterSidebar = () => (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <div>
-        <h3 className="font-bold text-primary-dark mb-4 uppercase tracking-wider text-sm">Category</h3>
-        <ul className="space-y-3">
+        <h3 className="font-bold text-primary-dark mb-5 uppercase tracking-[0.1em] text-xs">Category</h3>
+        <ul className="space-y-3.5">
           {isLoadingCategories ? (
             <div className="animate-pulse space-y-3">
               <div className="h-4 bg-light-neutral rounded w-3/4"></div>
@@ -121,7 +121,7 @@ export default function Shop() {
               <li key={cat.id} className="flex items-center">
                 <button 
                   onClick={() => handleCategoryChange(cat.id)}
-                  className={`text-left w-full hover:text-primary-dark-teal transition-colors flex items-center justify-between ${currentCategory === cat.id ? 'text-primary-dark-teal font-bold' : 'text-primary-dark/70'}`}
+                  className={`text-left w-full transition-colors flex items-center justify-between text-sm ${currentCategory === cat.id ? 'text-primary-dark-teal font-bold' : 'text-primary-dark/70 hover:text-primary-dark'}`}
                 >
                   {cat.label}
                 </button>
@@ -131,19 +131,27 @@ export default function Shop() {
         </ul>
       </div>
 
+      <div className="h-px w-full bg-gradient-to-r from-light-neutral/50 via-primary-dark-teal/10 to-transparent"></div>
+
       <div>
-        <h3 className="font-bold text-primary-dark mb-4 uppercase tracking-wider text-sm">Price</h3>
-        <ul className="space-y-3 text-primary-dark/70">
+        <h3 className="font-bold text-primary-dark mb-5 uppercase tracking-[0.1em] text-xs">Price</h3>
+        <ul className="space-y-3.5">
           {PRICE_RANGES.map(range => (
             <li key={range.id}>
-              <label className="flex items-center gap-3 cursor-pointer hover:text-primary-dark-teal group">
-                <input 
-                  type="checkbox" 
-                  checked={selectedPriceRanges.includes(range.id)}
-                  onChange={() => togglePriceRange(range.id)}
-                  className="rounded border-light-neutral text-primary-dark-teal focus:ring-primary-dark-teal w-4 h-4 cursor-pointer" 
-                />
-                <span className={`group-hover:text-primary-dark-teal ${selectedPriceRanges.includes(range.id) ? 'text-primary-dark-teal font-medium' : ''}`}>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className={`relative flex items-center justify-center w-[18px] h-[18px] rounded-[5px] border transition-all duration-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)] ${selectedPriceRanges.includes(range.id) ? 'border-transparent' : 'border-primary-dark-teal/30 bg-white group-hover:border-primary-dark-teal/60 group-hover:bg-primary-dark-teal/5'}`}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedPriceRanges.includes(range.id)}
+                    onChange={() => togglePriceRange(range.id)}
+                    className="opacity-0 absolute inset-0 cursor-pointer m-0 p-0 w-full h-full" 
+                  />
+                  <div className={`absolute inset-0 rounded-[4px] bg-gradient-to-br from-primary-dark-teal to-secondary-teal transition-all duration-200 ease-out ${selectedPriceRanges.includes(range.id) ? 'opacity-100 shadow-[0_2px_4px_rgba(20,83,86,0.2)]' : 'opacity-0'}`} />
+                  <svg className={`relative z-10 w-3 h-3 text-white pointer-events-none transition-transform duration-200 ease-out ${selectedPriceRanges.includes(range.id) ? 'scale-100' : 'scale-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className={`text-sm text-primary-dark/80 group-hover:text-primary-dark transition-colors ${selectedPriceRanges.includes(range.id) ? 'font-semibold text-primary-dark' : ''}`}>
                   {range.label}
                 </span>
               </label>
@@ -152,29 +160,37 @@ export default function Shop() {
         </ul>
       </div>
 
+      <div className="h-px w-full bg-gradient-to-r from-light-neutral/50 via-primary-dark-teal/10 to-transparent"></div>
+
       <div>
-        <h3 className="font-bold text-primary-dark mb-4 uppercase tracking-wider text-sm">Availability</h3>
-        <label className="flex items-center gap-3 text-primary-dark/70 cursor-pointer hover:text-primary-dark-teal group">
-          <input 
-            type="checkbox" 
-            checked={inStockOnly}
-            onChange={(e) => {
-              setInStockOnly(e.target.checked);
-              setPage(1);
-            }}
-            className="rounded border-light-neutral text-primary-dark-teal focus:ring-primary-dark-teal w-4 h-4 cursor-pointer" 
-          />
-          <span className={`group-hover:text-primary-dark-teal ${inStockOnly ? 'text-primary-dark-teal font-medium' : ''}`}>
+        <h3 className="font-bold text-primary-dark mb-5 uppercase tracking-[0.1em] text-xs">Availability</h3>
+        <label className="flex items-center gap-3 cursor-pointer group">
+          <div className={`relative flex items-center justify-center w-[18px] h-[18px] rounded-[5px] border transition-all duration-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)] ${inStockOnly ? 'border-transparent' : 'border-primary-dark-teal/30 bg-white group-hover:border-primary-dark-teal/60 group-hover:bg-primary-dark-teal/5'}`}>
+            <input 
+              type="checkbox" 
+              checked={inStockOnly}
+              onChange={(e) => {
+                setInStockOnly(e.target.checked);
+                setPage(1);
+              }}
+              className="opacity-0 absolute inset-0 cursor-pointer m-0 p-0 w-full h-full" 
+            />
+            <div className={`absolute inset-0 rounded-[4px] bg-gradient-to-br from-primary-dark-teal to-secondary-teal transition-all duration-200 ease-out ${inStockOnly ? 'opacity-100 shadow-[0_2px_4px_rgba(20,83,86,0.2)]' : 'opacity-0'}`} />
+            <svg className={`relative z-10 w-3 h-3 text-white pointer-events-none transition-transform duration-200 ease-out ${inStockOnly ? 'scale-100' : 'scale-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className={`text-sm text-primary-dark/80 group-hover:text-primary-dark transition-colors ${inStockOnly ? 'font-semibold text-primary-dark' : ''}`}>
             In Stock
           </span>
         </label>
       </div>
 
       {activeFilterCount > 0 && (
-        <div className="pt-4 border-t border-light-neutral/50">
+        <div className="pt-6">
           <button 
             onClick={clearAllFilters}
-            className="text-primary-dark-teal text-sm font-bold hover:underline"
+            className="text-primary-dark-teal text-sm font-semibold hover:text-primary-dark transition-colors"
           >
             Clear All Filters
           </button>
@@ -184,34 +200,38 @@ export default function Shop() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-soft-ivory">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-soft-ivory via-soft-ivory to-primary-dark-teal/5 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-dark-teal/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-secondary-teal/5 rounded-full blur-[150px] pointer-events-none -z-10" />
+
       <Navbar />
       
-      <main className="flex-grow pt-[120px] md:pt-[140px] pb-24">
+      <main className="flex-grow pt-[120px] md:pt-[140px] pb-24 relative z-10">
         <Container>
           {/* Header */}
-          <div className="mb-12">
+          <div className="mb-14 relative z-10">
+            <div className="absolute -inset-8 bg-gradient-to-r from-primary-dark-teal/5 to-transparent blur-3xl -z-10 rounded-full" />
             {currentSearch ? (
               <>
-                <span className="text-caption text-primary-dark-teal tracking-widest mb-3 block">
+                <span className="text-xs text-primary-dark-teal tracking-[0.2em] font-bold uppercase mb-4 block">
                   SEARCH RESULTS
                 </span>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-dark mb-4">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary-dark mb-5">
                   Results for "{currentSearch}"
                 </h1>
-                <p className="text-body-large text-primary-dark/70 max-w-xl">
+                <p className="text-body-large text-primary-dark/70 max-w-xl leading-relaxed">
                   {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} match your search.
                 </p>
               </>
             ) : (
               <>
-                <span className="text-caption text-primary-dark-teal tracking-widest mb-3 block">
+                <span className="text-xs text-primary-dark-teal tracking-[0.2em] font-bold uppercase mb-4 block">
                   THE MOBITECH COLLECTION
                 </span>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-dark mb-4">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary-dark mb-5">
                   Shop Accessories
                 </h1>
-                <p className="text-body-large text-primary-dark/70 max-w-xl">
+                <p className="text-body-large text-primary-dark/70 max-w-xl leading-relaxed">
                   Premium accessories designed for your everyday setup.
                 </p>
               </>
@@ -219,16 +239,16 @@ export default function Shop() {
           </div>
 
           {/* Horizontal Category Nav */}
-          <div className="flex overflow-x-auto hide-scrollbar gap-2 mb-10 pb-2 border-b border-light-neutral/50">
+          <div className="flex overflow-x-auto hide-scrollbar gap-3 mb-10 pb-4 border-b border-light-neutral/30">
             <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
             {formattedCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors ${
+                className={`px-6 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-out ${
                   currentCategory === cat.id 
-                    ? 'bg-primary-dark-teal text-white' 
-                    : 'bg-white/50 text-primary-dark hover:bg-white border border-light-neutral/50'
+                    ? 'bg-gradient-to-r from-primary-dark-teal to-secondary-teal text-white shadow-md hover:shadow-lg hover:-translate-y-[1px]' 
+                    : 'bg-white/70 text-primary-dark hover:bg-white border border-light-neutral/50 hover:shadow-sm hover:-translate-y-[1px]'
                 }`}
               >
                 {cat.label}
@@ -268,20 +288,27 @@ export default function Shop() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-primary-dark/60 hidden sm:inline">Sort by:</span>
-                  <select 
-                    value={sortOption}
-                    onChange={(e) => {
-                      setSortOption(e.target.value);
-                      setPage(1);
-                    }}
-                    className="bg-transparent border border-light-neutral rounded-lg px-3 py-1.5 text-primary-dark font-medium text-sm focus:ring-1 focus:ring-primary-dark-teal focus:border-primary-dark-teal cursor-pointer"
-                  >
-                    <option value="featured">Featured</option>
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="newest">Newest</option>
-                  </select>
+                  <span className="text-xs font-bold text-primary-dark/60 uppercase tracking-widest hidden sm:inline">Sort by:</span>
+                  <div className="relative group">
+                    <select 
+                      value={sortOption}
+                      onChange={(e) => {
+                        setSortOption(e.target.value);
+                        setPage(1);
+                      }}
+                      className="appearance-none bg-gradient-to-r from-soft-ivory to-white border border-primary-dark-teal/20 rounded-[12px] pl-4 pr-10 py-2 text-primary-dark font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary-dark-teal/20 focus:border-primary-dark-teal shadow-sm group-hover:border-primary-dark-teal/40 transition-all cursor-pointer"
+                    >
+                      <option value="featured">Featured</option>
+                      <option value="price-asc">Price: Low to High</option>
+                      <option value="price-desc">Price: High to Low</option>
+                      <option value="newest">Newest</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary-dark-teal/70 group-hover:text-primary-dark-teal transition-colors">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -375,26 +402,31 @@ export default function Shop() {
 
               {/* Pagination */}
               {paginatedData && paginatedData.pagination.totalPages > 1 && (
-                <div className="mt-16 flex justify-center items-center gap-4">
-                  <Button 
-                    variant="outline" 
-                    className="bg-white" 
+                <div className="mt-20 flex justify-center items-center gap-6">
+                  <button 
                     disabled={page === 1}
                     onClick={() => setPage(p => Math.max(1, p - 1))}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${page === 1 ? 'opacity-50 cursor-not-allowed border border-light-neutral text-primary-dark/50' : 'border border-primary-dark-teal/30 text-primary-dark hover:bg-primary-dark-teal/10 hover:border-primary-dark-teal/60 hover:-translate-y-[1px]'}`}
+                    aria-label="Previous page"
                   >
-                    Previous
-                  </Button>
-                  <span className="text-sm font-medium text-primary-dark">
-                    Page {page} of {paginatedData.pagination.totalPages}
-                  </span>
-                  <Button 
-                    variant="outline" 
-                    className="bg-white"
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary-dark-teal to-secondary-teal text-white text-sm font-bold shadow-md">
+                      {page}
+                    </div>
+                    <span className="text-sm font-semibold text-primary-dark/50 uppercase tracking-widest">
+                      of {paginatedData.pagination.totalPages}
+                    </span>
+                  </div>
+                  <button 
                     disabled={page === paginatedData.pagination.totalPages}
                     onClick={() => setPage(p => Math.min(paginatedData.pagination.totalPages, p + 1))}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${page === paginatedData.pagination.totalPages ? 'opacity-50 cursor-not-allowed border border-light-neutral text-primary-dark/50' : 'border border-primary-dark-teal/30 text-primary-dark hover:bg-primary-dark-teal/10 hover:border-primary-dark-teal/60 hover:-translate-y-[1px]'}`}
+                    aria-label="Next page"
                   >
-                    Next
-                  </Button>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </button>
                 </div>
               )}
             </div>
