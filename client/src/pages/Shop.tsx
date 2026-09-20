@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Navbar } from '../components/home/Navbar';
 import { Footer } from '../components/home/Footer';
@@ -17,6 +17,13 @@ const PRICE_RANGES = [
   { id: 'above-5000', label: 'Above ₹5,000', min: 5001, max: Infinity },
 ];
 
+const SORT_OPTIONS = [
+  { value: 'featured', label: 'Featured' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'newest', label: 'Newest' }
+];
+
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentCategory = searchParams.get('category') || 'all';
@@ -29,6 +36,18 @@ export default function Shop() {
   const [page, setPage] = useState(1);
   
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch Categories
   const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
@@ -289,25 +308,58 @@ export default function Shop() {
 
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold text-primary-dark/60 uppercase tracking-widest hidden sm:inline">Sort by:</span>
-                  <div className="relative group">
+                  <div className="relative group" ref={dropdownRef}>
+                    <button 
+                      type="button"
+                      onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                      className="flex items-center justify-between w-48 bg-gradient-to-r from-soft-ivory to-white border border-primary-dark-teal/20 rounded-[12px] pl-4 pr-3 py-2 text-primary-dark font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary-dark-teal/20 focus:border-primary-dark-teal shadow-sm hover:border-primary-dark-teal/40 transition-all cursor-pointer"
+                    >
+                      <span>{SORT_OPTIONS.find(opt => opt.value === sortOption)?.label}</span>
+                      <div className={`text-primary-dark-teal/70 transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`}>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
+
+                    <div className={`absolute top-full right-0 mt-2 w-48 bg-white border border-primary-dark-teal/10 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden z-50 transition-all duration-200 origin-top ${isSortDropdownOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
+                      <ul className="py-1.5">
+                        {SORT_OPTIONS.map((option) => (
+                          <li key={option.value}>
+                            <button
+                              onClick={() => {
+                                setSortOption(option.value);
+                                setPage(1);
+                                setIsSortDropdownOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                                sortOption === option.value 
+                                  ? 'bg-primary-dark-teal/5 text-primary-dark-teal font-bold' 
+                                  : 'text-primary-dark/70 hover:bg-soft-ivory hover:text-primary-dark font-medium'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Accessible native select */}
                     <select 
                       value={sortOption}
                       onChange={(e) => {
                         setSortOption(e.target.value);
                         setPage(1);
                       }}
-                      className="appearance-none bg-gradient-to-r from-soft-ivory to-white border border-primary-dark-teal/20 rounded-[12px] pl-4 pr-10 py-2 text-primary-dark font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary-dark-teal/20 focus:border-primary-dark-teal shadow-sm group-hover:border-primary-dark-teal/40 transition-all cursor-pointer"
+                      className="sr-only"
+                      aria-label="Sort products by"
+                      tabIndex={-1}
                     >
-                      <option value="featured">Featured</option>
-                      <option value="price-asc">Price: Low to High</option>
-                      <option value="price-desc">Price: High to Low</option>
-                      <option value="newest">Newest</option>
+                      {SORT_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
                     </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary-dark-teal/70 group-hover:text-primary-dark-teal transition-colors">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
                   </div>
                 </div>
               </div>
