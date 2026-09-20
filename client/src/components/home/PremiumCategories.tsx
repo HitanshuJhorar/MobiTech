@@ -1,6 +1,5 @@
 import { Container } from '../ui/Container';
 import { SectionHeading } from '../ui/SectionHeading';
-import { Card } from '../ui/Card';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -78,31 +77,25 @@ export function PremiumCategories() {
             <Link 
               key={cat.id} 
               to={cat.to}
-              className={`block ${cat.className}`}
-              style={{ borderRadius: '1.5rem' }}
+              className={`block rounded-3xl relative overflow-hidden group border-none flex flex-col ${cat.className}`}
             >
-              <Card 
-                variant="default"
-                className={`relative overflow-hidden group border-none h-full bg-transparent w-full rounded-3xl flex flex-col`}
-              >
-                <div className="relative z-10 p-6 md:p-8 flex flex-col h-full pointer-events-none">
-                  <div className="flex justify-between items-start">
-                    <h3 className={`text-h3 font-bold ${cat.titleClass}`}>
-                      {cat.name}
-                    </h3>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1 group-hover:translate-x-1 ${cat.buttonClass}`}>
-                      <ArrowUpRight size={20} strokeWidth={1.5} />
-                    </div>
+              <div className="relative z-10 p-6 md:p-8 flex flex-col h-full pointer-events-none">
+                <div className="flex justify-between items-start">
+                  <h3 className={`text-h3 font-bold ${cat.titleClass}`}>
+                    {cat.name}
+                  </h3>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1 group-hover:translate-x-1 ${cat.buttonClass}`}>
+                    <ArrowUpRight size={20} strokeWidth={1.5} />
                   </div>
                 </div>
-                
-                <img 
-                  src={cat.image} 
-                  alt={`${cat.name} category`} 
-                  className={`z-0 transition-transform duration-500 group-hover:scale-105 ${cat.imageClass}`}
-                  loading="lazy"
-                />
-              </Card>
+              </div>
+              
+              <img 
+                src={cat.image} 
+                alt={`${cat.name} category`} 
+                className={`z-0 transition-transform duration-500 group-hover:scale-105 ${cat.imageClass}`}
+                loading="lazy"
+              />
             </Link>
           ))}
         </div>
