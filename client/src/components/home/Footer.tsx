@@ -25,42 +25,40 @@ export function Footer() {
     : '';
 
   return (
-    <footer className="relative bg-gradient-to-b from-primary-dark-teal via-primary-dark to-[#0f3536] text-white pt-24 pb-10 overflow-hidden">
-      {/* Atmospheric Background Elements */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-secondary-teal/10 rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent-sand/5 rounded-full blur-[120px] pointer-events-none z-0" />
+    <footer className="relative bg-[#0d3b38] text-white pt-20 pb-8 overflow-hidden">
+      {/* Abstract Background Bubbles */}
+      <div className="absolute top-[-20%] right-[5%] w-[450px] h-[450px] rounded-full bg-gradient-to-br from-white/[0.07] to-transparent pointer-events-none z-0" />
+      <div className="absolute bottom-[-30%] left-[30%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none z-0" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[400px] h-[400px] rounded-full bg-gradient-to-tl from-white/[0.08] to-transparent pointer-events-none z-0" />
+      <div className="absolute top-[20%] left-[-10%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none z-0" />
       
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-10 mb-24">
           
           {/* Brand & CTA Area */}
-          <div className="lg:col-span-2 pr-0 lg:pr-12 flex flex-col">
-            <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">
+          <div className="lg:col-span-2 pr-0 lg:pr-16 flex flex-col">
+            <h2 className="text-3xl font-bold tracking-tight mb-8 text-white">
               Mobitech
             </h2>
-            <p className="text-white/70 mb-10 max-w-sm text-body-large leading-relaxed">
-              Premium mobile accessories designed to seamlessly integrate into your everyday setup.
-            </p>
             
-            <div className="mt-auto bg-white/5 backdrop-blur-md rounded-2xl p-6 lg:p-8 border border-white/10 shadow-xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+            <div className="mt-auto bg-white/[0.04] backdrop-blur-sm rounded-[24px] p-6 border border-white/10 relative overflow-hidden">
               <div className="relative z-10">
-                <span className="block text-accent-sand text-[11px] tracking-widest font-bold mb-3 uppercase">
+                <span className="block text-white text-[13px] font-bold mb-2">
                   NEED HELP CHOOSING?
                 </span>
-                <p className="text-white/80 mb-6 text-sm leading-relaxed">
-                  Get personalized product recommendations directly from our team.
+                <p className="text-white/80 mb-6 text-sm">
+                  Get personalized recommendations from our team.
                 </p>
                 {whatsappNumber ? (
                   <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" tabIndex={-1} className="block w-full">
-                    <button className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-primary-dark-teal via-primary-dark to-[#0f3536] transition-all duration-200 shadow-lg border border-white/10 hover:shadow-secondary-teal/20 hover:-translate-y-[2px] hover:border-white/20 flex items-center justify-center gap-2">
-                      <MessageCircle size={16} />
+                    <button className="w-full py-3 px-4 rounded-full font-semibold text-sm text-white bg-transparent border border-white/30 transition-all duration-200 hover:bg-white/10 flex items-center justify-center gap-2">
+                      <MessageCircle size={18} strokeWidth={2.5} />
                       Talk on WhatsApp
                     </button>
                   </a>
                 ) : (
-                  <button disabled className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white/50 bg-white/5 border border-white/5 cursor-not-allowed flex items-center justify-center gap-2">
-                    <MessageCircle size={16} />
+                  <button disabled className="w-full py-3 px-4 rounded-full font-semibold text-sm text-white/50 bg-transparent border border-white/10 cursor-not-allowed flex items-center justify-center gap-2">
+                    <MessageCircle size={18} strokeWidth={2.5} />
                     Talk on WhatsApp
                   </button>
                 )}
@@ -70,16 +68,15 @@ export function Footer() {
 
           {/* Shop Links */}
           <div className="lg:col-span-1">
-            <h3 className="text-white text-xs font-bold mb-8 tracking-widest uppercase">SHOP</h3>
+            <h3 className="text-white text-[13px] font-bold mb-6 tracking-wide uppercase">SHOP</h3>
             <ul className="flex flex-col gap-4">
               {shopLinks.map((link) => (
                 <li key={link.label}>
                   <Link 
                     to={link.href} 
-                    className="text-white/60 hover:text-white transition-all duration-200 hover:translate-x-1 flex items-center group w-fit text-sm font-medium"
+                    className="text-white/70 hover:text-white transition-colors duration-200 flex items-center w-fit text-sm"
                   >
                     {link.label}
-                    <ArrowUpRight size={14} className="ml-1 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300" />
                   </Link>
                 </li>
               ))}
@@ -88,12 +85,12 @@ export function Footer() {
 
           {/* Help Links */}
           <div className="lg:col-span-1">
-            <h3 className="text-white text-xs font-bold mb-8 tracking-widest uppercase">HELP</h3>
+            <h3 className="text-white text-[13px] font-bold mb-6 tracking-wide uppercase">HELP</h3>
             <ul className="flex flex-col gap-4">
               {helpLinks.map((link) => (
                 <li key={link.label}>
                   <span 
-                    className="text-white/60 transition-all duration-200 w-fit text-sm font-medium cursor-default"
+                    className="text-white/70 hover:text-white transition-colors duration-200 w-fit text-sm cursor-pointer"
                   >
                     {link.label}
                   </span>
@@ -104,7 +101,7 @@ export function Footer() {
 
           {/* Connect */}
           <div className="lg:col-span-1">
-            <h3 className="text-white text-xs font-bold mb-8 tracking-widest uppercase">CONNECT</h3>
+            <h3 className="text-white text-[13px] font-bold mb-6 tracking-wide uppercase">CONNECT</h3>
             <ul className="flex flex-col gap-5">
               <li>
                 {whatsappNumber ? (
@@ -112,27 +109,27 @@ export function Footer() {
                     href={`https://wa.me/${whatsappNumber}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-white/60 hover:text-white transition-all duration-200 hover:translate-x-1 flex items-center gap-3 w-fit text-sm font-medium group"
+                    className="text-white/70 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit text-sm"
                     aria-label="WhatsApp"
                   >
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-colors">
-                      <MessageCircle size={15} />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center border border-white/20">
+                      <MessageCircle size={14} />
                     </div>
                     <span>WhatsApp</span>
                   </a>
                 ) : (
-                  <span className="text-white/60 opacity-50 flex items-center gap-3 w-fit text-sm font-medium cursor-not-allowed">
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                      <MessageCircle size={15} />
+                  <span className="text-white/70 opacity-50 flex items-center gap-3 w-fit text-sm cursor-not-allowed">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center border border-white/20">
+                      <MessageCircle size={14} />
                     </div>
                     <span>WhatsApp</span>
                   </span>
                 )}
               </li>
               <li>
-                <span className="text-white/60 flex items-center gap-3 w-fit text-sm font-medium cursor-default">
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <span className="text-white/70 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit text-sm cursor-pointer">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center border border-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
                       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
@@ -144,11 +141,11 @@ export function Footer() {
               <li>
                 <a 
                   href="mailto:support@mobitech.example.com"
-                  className="text-white/60 hover:text-white transition-all duration-200 hover:translate-x-1 flex items-center gap-3 w-fit text-sm font-medium group"
+                  className="text-white/70 hover:text-white transition-colors duration-200 flex items-center gap-3 w-fit text-sm"
                   aria-label="Email"
                 >
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-colors">
-                    <Mail size={15} />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center border border-white/20">
+                    <Mail size={14} />
                   </div>
                   <span>Email</span>
                 </a>
@@ -159,16 +156,16 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-white/40">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/50">
           <div className="flex items-center gap-2">
             <span>&copy; 2026 Mobitech.</span>
             <span>All rights reserved.</span>
           </div>
-          <div className="flex items-center gap-8">
-            <span className="hover:text-white transition-colors duration-200 cursor-default">
+          <div className="flex items-center gap-6">
+            <span className="hover:text-white transition-colors duration-200 cursor-pointer">
               Privacy Policy
             </span>
-            <span className="hover:text-white transition-colors duration-200 cursor-default">
+            <span className="hover:text-white transition-colors duration-200 cursor-pointer">
               Terms of Service
             </span>
           </div>
