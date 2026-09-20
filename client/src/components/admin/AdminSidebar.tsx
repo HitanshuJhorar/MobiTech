@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { path: '/admin/products', label: 'Products', icon: Package },
   { path: '/admin/categories', label: 'Categories', icon: Tag },
   { path: '/admin/inventory', label: 'Inventory', icon: Archive },
-  { path: '/admin/orders', label: 'Orders', icon: ShoppingCart, placeholder: true },
+  { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
 ];
 
 export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
@@ -36,7 +36,6 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
         </Link>
       </div>
 
-      {/* Nav Links */}
       <div className="flex-1 overflow-y-auto py-6 px-4">
         <ul className="space-y-2">
           {NAV_ITEMS.map((item) => {
@@ -46,26 +45,16 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
             return (
               <li key={item.path}>
                 <Link
-                  to={item.placeholder ? '#' : item.path}
-                  onClick={(e) => {
-                    if (item.placeholder) {
-                      e.preventDefault();
-                      alert('This module will be available in a future phase.');
-                    } else if (onCloseMobile) {
-                      onCloseMobile();
-                    }
-                  }}
+                  to={item.path}
+                  onClick={onCloseMobile}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-primary-dark-teal text-white'
                       : 'text-primary-dark hover:bg-light-neutral/50'
-                  } ${item.placeholder ? 'opacity-50' : ''}`}
+                  }`}
                 >
                   <Icon size={20} />
                   {item.label}
-                  {item.placeholder && (
-                    <span className="ml-auto text-[10px] uppercase tracking-wider opacity-70">Soon</span>
-                  )}
                 </Link>
               </li>
             );
