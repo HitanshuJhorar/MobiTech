@@ -11,6 +11,7 @@ import AdminProducts from "../pages/admin/AdminProducts";
 import AdminProductForm from "../pages/admin/AdminProductForm";
 import AdminCategories from "../pages/admin/AdminCategories";
 import AdminCategoryForm from "../pages/admin/AdminCategoryForm";
+import AdminInventory from "../pages/admin/AdminInventory";
 import { ProtectedAdminRoute } from "../components/admin/ProtectedAdminRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 
@@ -83,7 +84,7 @@ export const router = createBrowserRouter([
           // Placeholders for future routes
           {
             path: "inventory",
-            element: <div className="p-8 text-center text-primary-dark/50">Inventory Module Coming Soon</div>,
+            element: <AdminInventory />,
           },
           {
             path: "orders",

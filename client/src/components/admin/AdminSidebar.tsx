@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/products', label: 'Products', icon: Package },
   { path: '/admin/categories', label: 'Categories', icon: Tag },
-  { path: '/admin/inventory', label: 'Inventory', icon: Archive, placeholder: true },
+  { path: '/admin/inventory', label: 'Inventory', icon: Archive },
   { path: '/admin/orders', label: 'Orders', icon: ShoppingCart, placeholder: true },
 ];
 

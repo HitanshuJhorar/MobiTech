@@ -13,8 +13,12 @@ export const inventoryController = {
       const status = ["all", "in-stock", "out-of-stock"].includes(statusParam)
         ? (statusParam as "all" | "in-stock" | "out-of-stock")
         : "all";
+      const productStatusParam = (req.query.productStatus as string) || "all";
+      const productStatus = ["all", "active", "inactive"].includes(productStatusParam)
+        ? (productStatusParam as "all" | "active" | "inactive")
+        : "all";
 
-      const result = await inventoryService.list({ page, limit, search, category, status });
+      const result = await inventoryService.list({ page, limit, search, category, status, productStatus });
       res.json({ success: true, data: result });
     } catch (err) {
       next(err);

@@ -8,17 +8,21 @@ interface ListInventoryOptions {
   search?: string;
   category?: string;
   status?: "all" | "in-stock" | "out-of-stock";
+  productStatus?: "all" | "active" | "inactive";
 }
 
 // Lightweight projection for inventory responses
-const INVENTORY_PROJECTION = "name category stockQuantity inStock isActive price";
+const INVENTORY_PROJECTION = "name category stockQuantity inStock isActive price images slug";
 
 export const inventoryService = {
   async list(options: ListInventoryOptions) {
-    const { page, limit, search, category, status = "all" } = options;
+    const { page, limit, search, category, status = "all", productStatus = "active" } = options;
     const skip = (page - 1) * limit;
 
-    const filter: FilterQuery<IProduct> = { isActive: true };
+    const filter: FilterQuery<IProduct> = {};
+    if (productStatus === "active") filter.isActive = true;
+    else if (productStatus === "inactive") filter.isActive = false;
+    // "all" means no isActive filter
 
     if (search) {
       filter.name = { $regex: search, $options: "i" };
