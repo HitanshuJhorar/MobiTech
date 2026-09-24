@@ -10,6 +10,7 @@ import {
   Loader2, Filter, X 
 } from 'lucide-react';
 import { ApiProduct } from '../../types';
+import { isAxiosError } from 'axios';
 
 export default function AdminProducts() {
   // Filters state
@@ -58,8 +59,9 @@ export default function AdminProducts() {
   const toggleActiveStatus = async (product: ApiProduct) => {
     try {
       await updateProduct({ id: product._id, data: { isActive: !product.isActive } });
-    } catch {
-      alert('Failed to update product status.');
+    } catch (err) {
+      const msg = isAxiosError(err) ? (err.response?.data?.message || err.message) : (err as Error).message;
+      alert(`Failed to update product status: ${msg}`);
     }
   };
 
@@ -68,8 +70,9 @@ export default function AdminProducts() {
     setDeletingId(id);
     try {
       await deleteProduct(id);
-    } catch {
-      alert('Failed to delete product.');
+    } catch (err) {
+      const msg = isAxiosError(err) ? (err.response?.data?.message || err.message) : (err as Error).message;
+      alert(`Failed to delete product: ${msg}`);
     } finally {
       setDeletingId(null);
     }

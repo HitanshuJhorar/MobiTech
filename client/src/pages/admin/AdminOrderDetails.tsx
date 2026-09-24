@@ -42,7 +42,11 @@ export default function AdminOrderDetails() {
       setPendingStatus('');
     } catch (err) {
       if (isAxiosError(err)) {
-        setStatusError(err.response?.data?.message || 'Failed to update status.');
+        if (!err.response) {
+          setStatusError('Network Error: Cannot connect to the server.');
+        } else {
+          setStatusError(err.response.data?.message || 'Failed to update status.');
+        }
       } else {
         setStatusError('An unexpected error occurred.');
       }

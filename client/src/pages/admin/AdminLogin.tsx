@@ -42,7 +42,11 @@ export default function AdminLogin() {
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
       if (isAxiosError(err)) {
-        setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
+        if (!err.response) {
+          setErrorMsg('Network Error: Cannot connect to the server.');
+        } else {
+          setErrorMsg(err.response.data?.message || 'Invalid email or password.');
+        }
       } else {
         setErrorMsg('An unexpected error occurred.');
       }

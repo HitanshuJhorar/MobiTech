@@ -41,8 +41,9 @@ export default function AdminCategories() {
   const toggleActiveStatus = async (category: ApiCategory) => {
     try {
       await updateCategory({ id: category._id, data: { isActive: !category.isActive } });
-    } catch {
-      alert('Failed to update category status.');
+    } catch (err) {
+      const msg = isAxiosError(err) ? (err.response?.data?.message || err.message) : (err as Error).message;
+      alert(`Failed to update category status: ${msg}`);
     }
   };
 
@@ -52,10 +53,14 @@ export default function AdminCategories() {
     try {
       await deleteCategory(id);
     } catch (err) {
-      if (isAxiosError(err) && err.response?.status === 409) {
-        alert(err.response.data.message || 'Cannot delete category because it is in use.');
+      if (isAxiosError(err)) {
+        if (err.response?.status === 409) {
+          alert(err.response.data.message || 'Cannot delete category because it is in use.');
+        } else {
+          alert(`Failed to delete category: ${err.response?.data?.message || err.message}`);
+        }
       } else {
-        alert('Failed to delete category.');
+        alert(`Failed to delete category: ${(err as Error).message}`);
       }
     } finally {
       setDeletingId(null);
@@ -83,8 +88,9 @@ export default function AdminCategories() {
         updateCategory({ id: currentCat._id, data: { sortOrder: newCurrentSort } }),
         updateCategory({ id: targetCat._id, data: { sortOrder: newTargetSort } })
       ]);
-    } catch {
-      alert('Failed to reorder categories.');
+    } catch (err) {
+      const msg = isAxiosError(err) ? (err.response?.data?.message || err.message) : (err as Error).message;
+      alert(`Failed to reorder categories: ${msg}`);
     } finally {
       setMovingId(null);
     }

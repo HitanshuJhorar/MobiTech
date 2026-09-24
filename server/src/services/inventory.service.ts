@@ -80,7 +80,7 @@ export const inventoryService = {
     const product = await Product.findById(productId).select("stockQuantity");
     if (!product) return null;
 
-    const newQty = product.stockQuantity + adjustment;
+    const newQty = product.stockQuantity + adjustment; 
     if (newQty < 0) {
       throw new Error("INSUFFICIENT_STOCK");
     }

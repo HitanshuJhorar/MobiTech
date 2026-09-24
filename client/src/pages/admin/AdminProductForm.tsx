@@ -106,7 +106,11 @@ export default function AdminProductForm() {
       navigate('/admin/products');
     } catch (err) {
       if (isAxiosError(err)) {
-        setErrorMsg(err.response?.data?.message || 'Failed to save product. Check slug uniqueness and inputs.');
+        if (!err.response) {
+          setErrorMsg('Network Error: Cannot connect to the server.');
+        } else {
+          setErrorMsg(err.response.data?.message || 'Failed to save product. Check slug uniqueness and inputs.');
+        }
       } else {
         setErrorMsg('An unexpected error occurred.');
       }
