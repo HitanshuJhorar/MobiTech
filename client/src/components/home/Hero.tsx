@@ -16,8 +16,17 @@ export function Hero() {
       </div>
 
       <Container className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-        {/* Left Content */}
-        <div className="max-w-xl z-10">
+        {/* Left Visual */}
+        <div className="relative w-full aspect-square md:aspect-[4/3] lg:aspect-[1/1] flex items-center justify-center z-10 order-2 lg:order-1">
+           <img 
+             src="/images/hero-products.png" 
+             alt="Premium Mobile Accessories Collection"
+             className="w-[110%] h-auto max-w-none -ml-4 lg:-ml-10 object-contain drop-shadow-2xl"
+           />
+        </div>
+
+        {/* Right Content */}
+        <div className="max-w-xl z-10 order-1 lg:order-2 lg:pl-8">
           <h1 className="text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] font-bold tracking-tight text-primary-dark leading-[1.1] mb-6">
             Accessories That<br />
             Feel Premium
@@ -38,16 +47,6 @@ export function Hero() {
               </button>
             </Link>
           </div>
-        </div>
-
-        {/* Right Visual */}
-        <div className="relative w-full aspect-square md:aspect-[4/3] lg:aspect-[1/1] flex items-center justify-center z-10">
-           {/* Fallback image representing multiple floating products */}
-           <img 
-             src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1000&auto=format&fit=crop&bg=transparent" 
-             alt="Premium Mobile Accessories Collection"
-             className="w-[120%] h-auto max-w-none ml-10 object-contain drop-shadow-2xl mix-blend-multiply"
-           />
         </div>
       </Container>
     </section>
